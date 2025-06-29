@@ -207,3 +207,16 @@ function setupEventListeners() {
 
 // Launch app
 document.addEventListener('DOMContentLoaded', init);
+function filterQuote() {
+  const selectedCategory = categoryFilter.value; // Use this exact variable name
+  let filteredQuotes;
+
+  if (selectedCategory === 'all') {
+    filteredQuotes = quotes;
+  } else {
+    filteredQuotes = quotes.filter(q => q.category === selectedCategory);
+  }
+
+  displayQuotes(filteredQuotes);
+  saveFilterPreference(selectedCategory); // Save it to localStorage
+}
