@@ -263,3 +263,47 @@ function setupEventListeners() {
 }
 
 document.addEventListener('DOMContentLoaded', init);
+// Notify user visually of data updates
+function notifyUser(message) {
+  const bar = document.createElement('div');
+  bar.textContent = message;
+  bar.style = `
+    position: fixed;
+    top: 10px; left: 50%;
+    transform: translateX(-50%);
+    background: #0d6efd;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    z-index: 1000;
+    font-weight: bold;
+  `;
+  document.body.appendChild(bar);
+  setTimeout(() => bar.remove(), 4000);
+}
+
+// Main sync function: POST local, then fetch & merge server data
+async function syncQuotes() {
+  try {
+    await postQuotesToServer(); // send local quotes first
+    const serverQuotes = await fetchQuotesFromServer();
+    const localQuotes = JSON.parse(localStorage.getItem('quotes')) || [];
+    const mergedQuotes = mergeQuotes(localQuotes, serverQuotes);
+
+    const conflictCount = mergedQuotes.length - localQuotes.length;
+    if (conflictCount > 0) {
+      notifyUser(`Quotes synced with server! ${conflictCount} new quotes added due to conflicts.`);
+    } else {
+      notifyUser('Quotes synced with server!');
+    }
+
+    quotes = mergedQuotes;
+    saveQuotes();
+    populateCategories();
+    filterQuotes();
+  } catch (err) {
+    console.error('Sync error:', err);
+    notifyUser('Sync failed. Check console for details.');
+  }
+}
