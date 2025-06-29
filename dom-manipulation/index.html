@@ -45,6 +45,26 @@
       />
       <button onclick="addQuote()">Add Quote</button>
     </div>
+    <div>
+      <input id="newQuoteText" type="text" placeholder="Enter a new quote" />
+      <input
+        id="newQuoteCategory"
+        type="text"
+        placeholder="Enter quote category"
+      />
+      <button onclick="addQuote()">Add Quote</button>
+    </div>
+
+    <!-- ✅ NEW: Import/Export Section -->
+    <div style="margin-top: 20px">
+      <button onclick="exportToJsonFile()">Export Quotes</button>
+      <input
+        type="file"
+        id="importFile"
+        accept=".json"
+        onchange="importFromJsonFile(event)"
+      />
+    </div>
 
     <script src="script.js"></script>
   </body>

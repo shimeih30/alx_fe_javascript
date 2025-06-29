@@ -256,3 +256,86 @@ document.addEventListener('DOMContentLoaded', () => {
     showRandomQuote();
   });
 });
+
+// Quotes data
+let quotes = [
+  { text: "Life is what happens when you're busy making other plans.", category: "Life" },
+  { text: "The only limit to our realization of tomorrow is our doubts of today.", category: "Motivation" },
+  { text: "Creativity is intelligence having fun.", category: "Creativity" }
+];
+
+// DOM elements
+const quoteDisplay = document.getElementById("quoteDisplay");
+const newQuoteBtn = document.getElementById("newQuote");
+
+// Show random quote
+function displayRandomQuote() {
+  if (quotes.length === 0) {
+    quoteDisplay.textContent = "No quotes available. Please add one!";
+    return;
+  }
+
+  const randomIndex = Math.floor(Math.random() * quotes.length);
+  const quote = quotes[randomIndex];
+  quoteDisplay.textContent = `"${quote.text}" — (${quote.category})`;
+}
+
+// Add quote
+function addQuote() {
+  const text = document.getElementById("newQuoteText").value.trim();
+  const category = document.getElementById("newQuoteCategory").value.trim();
+
+  if (text === "" || category === "") {
+    alert("Please fill in both fields.");
+    return;
+  }
+
+  quotes.push({ text, category });
+  quoteDisplay.textContent = `"${text}" — (${category})`;
+
+  document.getElementById("newQuoteText").value = "";
+  document.getElementById("newQuoteCategory").value = "";
+}
+
+// ✅ Export quotes to JSON file
+function exportToJsonFile() {
+  const jsonData = JSON.stringify(quotes, null, 2);
+  const blob = new Blob([jsonData], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "quotes.json";
+  link.click();
+
+  URL.revokeObjectURL(url);
+}
+
+// ✅ Import quotes from JSON file
+function importFromJsonFile(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const importedQuotes = JSON.parse(e.target.result);
+      if (Array.isArray(importedQuotes)) {
+        importedQuotes.forEach(q => {
+          if (q.text && q.category) {
+            quotes.push({ text: q.text, category: q.category });
+          }
+        });
+        displayRandomQuote();
+      } else {
+        alert("Invalid JSON structure.");
+      }
+    } catch (error) {
+      alert("Error reading JSON file.");
+    }
+  };
+  reader.readAsText(file);
+}
+
+// Event listener
+newQuoteBtn.addEventListener("click", displayRandomQuote);
